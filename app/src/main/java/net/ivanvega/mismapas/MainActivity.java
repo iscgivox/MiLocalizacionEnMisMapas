@@ -23,6 +23,8 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.server.converter.StringToIntConverter;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -252,8 +254,20 @@ public class MainActivity extends AppCompatActivity
 
             Log.i(LOGTAG, "Inicio de recepción de ubicaciones");
 
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, locRequest, new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            updateLocation(location);
+                        }
+                    });
 
         }
+    }
+
+    private void updateLocation(Location location) {
+        txtLng.setText(String.valueOf(location.getLongitude()));
+        txtLat.setText(String.valueOf(location.getLatitude()));
     }
 
 }
