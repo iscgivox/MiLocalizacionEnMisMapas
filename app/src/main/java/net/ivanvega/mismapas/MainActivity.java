@@ -35,7 +35,7 @@ import static com.google.ads.AdRequest.LOGTAG;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener , LocationListener {
 
     private static final int PETICION_CONFIG_UBICACION = 1002;
     private LocationRequest locRequest;
@@ -138,8 +138,12 @@ public class MainActivity extends AppCompatActivity
         if (isChecked){
             enableLocationUpdates();
         }else{
-
+            disableLocationUpdates();
         }
+    }
+
+    private void disableLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,this );
     }
 
     @Override
@@ -255,12 +259,7 @@ public class MainActivity extends AppCompatActivity
             Log.i(LOGTAG, "Inicio de recepción de ubicaciones");
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, locRequest, new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            updateLocation(location);
-                        }
-                    });
+                    mGoogleApiClient, locRequest, this);
 
         }
     }
@@ -270,4 +269,8 @@ public class MainActivity extends AppCompatActivity
         txtLat.setText(String.valueOf(location.getLatitude()));
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        updateLocation(location);
+    }
 }
