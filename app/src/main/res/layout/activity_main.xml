@@ -29,4 +29,12 @@
         android:text="Obtener localizacion"
         />
 
+    <Button
+        android:id="@+id/btnMapa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="btnMapa_click"
+        android:text="Abrir Mapas"
+        />
+
 </LinearLayout>

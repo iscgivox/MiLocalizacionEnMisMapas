@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -65,7 +66,12 @@ public class MainActivity extends AppCompatActivity
                             .build();
 
         }
+    }
 
+    public void btnMapa_click (View v){
+        startActivity(
+                new Intent(this, ActivityMapas.class)
+        );
     }
 
     private void enableLocationUpdates(){

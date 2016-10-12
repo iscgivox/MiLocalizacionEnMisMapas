@@ -36,7 +36,7 @@ implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-
     }
 
 }
+
