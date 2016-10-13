@@ -4,6 +4,7 @@ import android.app.FragmentTransaction;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMapClickListene
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
+        map.setOnMapClickListener(this);
     }
 
     private Button btnOpcion, btnAnimar, btnMOver, btnPOsicion;
@@ -101,6 +103,11 @@ implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMapClickListene
     public void onMapClick(LatLng latLng) {
         Projection proj = map.getProjection();
         Point coord = proj.toScreenLocation(latLng);
+
+        Log.d("MAPA-PROJECTION",
+                "LAT: " + String.valueOf(proj.fromScreenLocation(coord).latitude  ) +
+                        ", LON: " + String.valueOf(proj.fromScreenLocation(coord).longitude  ) );
+
 
         Toast.makeText(
                 this,
