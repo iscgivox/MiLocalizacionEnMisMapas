@@ -37,4 +37,12 @@
         android:text="Abrir Mapas"
         />
 
+    <Button
+        android:id="@+id/btnMapaMarker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="btnMarker_click"
+        android:text="Abrir Mapas"
+        />
+
 </LinearLayout>

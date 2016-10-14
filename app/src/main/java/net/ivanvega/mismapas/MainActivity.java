@@ -73,6 +73,11 @@ public class MainActivity extends AppCompatActivity
                 new Intent(this, ActivityMapas.class)
         );
     }
+    public void btnMarker_click (View v){
+        startActivity(
+                new Intent(this, MapsActivityMarkers.class)
+        );
+    }
 
     private void enableLocationUpdates(){
         locRequest = new LocationRequest();
