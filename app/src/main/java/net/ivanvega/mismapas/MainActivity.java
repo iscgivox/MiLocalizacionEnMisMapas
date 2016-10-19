@@ -31,12 +31,21 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.ads.AdRequest.LOGTAG;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener , LocationListener {
+        GoogleApiClient.OnConnectionFailedListener , LocationListener , OnMapReadyCallback {
+
+    SupportMapFragment mapFragment ;
+
 
     private static final int PETICION_CONFIG_UBICACION = 1002;
     private LocationRequest locRequest;
@@ -49,6 +58,7 @@ public class MainActivity extends AppCompatActivity
 
     TextView txtLat, txtLng;
     Switch swActualizaciones;
+    private GoogleMap mapLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +76,10 @@ public class MainActivity extends AppCompatActivity
                             .build();
 
         }
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapLocation);
+        mapFragment.getMapAsync(this);
     }
 
     public void btnMapa_click (View v){
@@ -79,51 +93,51 @@ public class MainActivity extends AppCompatActivity
         );
     }
 
-    private void enableLocationUpdates(){
-        locRequest = new LocationRequest();
-        locRequest.setInterval(2000);
-        locRequest.setFastestInterval(1000);
-        locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            private void enableLocationUpdates(){
+                locRequest = new LocationRequest();
+                locRequest.setInterval(2000);
+                locRequest.setFastestInterval(1000);
+                locRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        LocationSettingsRequest locationSettingsRequest
-                = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locRequest)
-                .build();
+                LocationSettingsRequest locationSettingsRequest
+                        = new LocationSettingsRequest.Builder()
+                        .addLocationRequest(locRequest)
+                        .build();
 
-       PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(
-                        mGoogleApiClient, locationSettingsRequest);
+               PendingResult<LocationSettingsResult> result =
+                        LocationServices.SettingsApi.checkLocationSettings(
+                                mGoogleApiClient, locationSettingsRequest);
 
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult locationSettingsResult) {
-                final Status status = locationSettingsResult.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
+                result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                    @Override
+                    public void onResult(LocationSettingsResult locationSettingsResult) {
+                        final Status status = locationSettingsResult.getStatus();
+                        switch (status.getStatusCode()) {
+                            case LocationSettingsStatusCodes.SUCCESS:
 
-                        Log.i(LOGTAG, "Configuración correcta");
-                        startLocationUpdates();
-                        break;
+                                Log.i(LOGTAG, "Configuración correcta");
+                                startLocationUpdates();
+                                break;
 
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            Log.i(LOGTAG, "Se requiere actuación del usuario");
-                            status.startResolutionForResult(MainActivity.this, PETICION_CONFIG_UBICACION);
-                        } catch (IntentSender.SendIntentException e) {
-                            swActualizaciones.setChecked(false);
-                            Log.i(LOGTAG, "Error al intentar solucionar configuración de ubicación");
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                try {
+                                    Log.i(LOGTAG, "Se requiere actuación del usuario");
+                                    status.startResolutionForResult(MainActivity.this, PETICION_CONFIG_UBICACION);
+                                } catch (IntentSender.SendIntentException e) {
+                                    swActualizaciones.setChecked(false);
+                                    Log.i(LOGTAG, "Error al intentar solucionar configuración de ubicación");
+                                }
+                                break;
+
+                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                Log.i(LOGTAG, "No se puede cumplir la configuración de ubicación necesaria");
+                                swActualizaciones.setChecked(false);
+                                break;
                         }
-                        break;
+                    }
+                });
 
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.i(LOGTAG, "No se puede cumplir la configuración de ubicación necesaria");
-                        swActualizaciones.setChecked(false);
-                        break;
-                }
             }
-        });
-
-    }
 
 
     private void inicializarUI() {
@@ -283,5 +297,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         updateLocation(location);
+        marcarLocationMapa(location);
+    }
+
+    private void marcarLocationMapa(Location location) {
+        mapLocation.addMarker(
+                new MarkerOptions().position(
+                        new LatLng(location.getLatitude(),location.getLongitude())));
+        mapLocation.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mapLocation = googleMap;
+
     }
 }
